@@ -29,6 +29,15 @@ public interface ChatMessageRepository extends JpaRepository<ChatMessage, Long> 
             @Param("lastMessageId") Long lastMessageId,
             Pageable pageable
     );
+
+    @Query("""
+    select m
+    from ChatMessage m
+    join fetch m.sender
+    where m.chatRoom.id = :roomId
+    order by m.id desc
+    """)
+    List<ChatMessage> findRecentByRoom(@Param("roomId") Long roomId, Pageable pageable);
 }
 
 
