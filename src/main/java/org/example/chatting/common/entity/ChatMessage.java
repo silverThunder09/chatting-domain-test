@@ -18,13 +18,17 @@ public class ChatMessage {
     @ManyToOne(fetch = FetchType.LAZY)
     private User sender;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    private ChatRoom chatRoom;
+
     private String content;
 
     private LocalDateTime createdAt;
 
-    public ChatMessage(User sender, String content) {
+    public ChatMessage(User sender, ChatRoom chatRoom, String content) {
         this.sender = sender;
         this.content = content;
+        this.chatRoom = chatRoom;
         this.createdAt = LocalDateTime.now();
     }
 
