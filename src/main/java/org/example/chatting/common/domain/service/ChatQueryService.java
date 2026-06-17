@@ -3,6 +3,7 @@ package org.example.chatting.common.domain.service;
 import lombok.RequiredArgsConstructor;
 import org.example.chatting.common.domain.model.ChatMessageResponse;
 import org.example.chatting.common.domain.repository.ChatMessageRepository;
+import org.example.chatting.common.entity.ChatMessage;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -33,4 +34,16 @@ public class ChatQueryService {
                 .map(ChatMessageResponse::new)
                 .toList();
     }
+
+    public List<ChatMessageResponse> getRecentMessage(Long roomId, int size) {
+
+        Pageable pageable = PageRequest.of(0, size);
+
+        return repository.findRecentByRoom(roomId, pageable)
+                .stream()
+                .map(ChatMessageResponse::new)
+                .toList();
+    }
 }
+
+
