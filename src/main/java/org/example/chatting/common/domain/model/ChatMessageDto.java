@@ -11,5 +11,5 @@ public class ChatMessageDto {
 
     private Long senderId;
     private String content;
-
+    private Long roomId;
 }
