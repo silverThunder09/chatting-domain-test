@@ -9,9 +9,12 @@ import org.example.chatting.common.domain.repository.UserRepository;
 import org.example.chatting.common.entity.ChatMessage;
 import org.example.chatting.common.entity.ChatRoom;
 import org.example.chatting.common.entity.User;
+import org.example.chatting.common.interceptor.AuthenticatedUser;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
+
+import java.security.Principal;
 
 @Controller
 @RequiredArgsConstructor
@@ -26,22 +29,18 @@ public class ChatController {
     // /pub/chat.send
 
     @MessageMapping("/chat.send")
-    public void send(ChatMessageDto dto) {
+    public void send(ChatMessageDto dto, Principal principal) {
 
-        User sender = userRepository
-                .findById(dto.getSenderId())
-                .orElseThrow();
+        User sender = AuthenticatedUser.fromPrincipal(principal);
 
-        ChatRoom room = chatRoomRepository
-                .findById(dto.getRoomId())
-                .orElseThrow();
+          ChatRoom room = chatRoomRepository.findById(dto.getRoomId()).orElseThrow();
 
-        ChatMessage message = new ChatMessage(sender,room, dto.getContent());
+        ChatMessage message = new ChatMessage(sender, room, dto.getContent());
         chatMessageRepository.save(message);
 
         // 받은 메시지를 채팅방에 발송 시켜줘야 한다
         // /sub/chat 이라는 채팅방 이름에다가
         // 외부에서 받아온 dto를 전달 시켜줄 예정이다
-        messagingTemplate.convertAndSend("/sub/chat"+dto.getRoomId() ,dto);
+        messagingTemplate.convertAndSend("/sub/chat" + dto.getRoomId(), dto);
     }
 }
